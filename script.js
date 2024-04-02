@@ -1,38 +1,36 @@
-$('.search-btn').on('click', function(){
-    
-    $.ajax({
-        url: `http://www.omdbapi.com/?apikey=23a4f454&&s=` + $('.input-key').val(),
-        success: r =>{
-            const Movies = r.Search;
-            let cards = '';
-            Movies.forEach(m => {
-                cards += ShowCards(m);
-            });
-            $('.movie-container').html(cards);
-    
-            // IMDBID FUNCTION
-            $('.modal-detail-btn').on('click', function(){
-                $.ajax({
-                    url: 'http://www.omdbapi.com/?apikey=23a4f454&&i=' + $(this).data('imdbid'),
-                    success: s =>{
-                        const movieDetail = ShowDetail(s);
-                        $('.modal-body').html(movieDetail);                     
-                    },
-                    error: (e) =>{
-                        console.log(e.responseText);
-                    }
-                }
-            )})
+$(".search-btn").on("click", function () {
+$.ajax({
+    url: `http://www.omdbapi.com/?apikey=23a4f454&&s=` + $(".input-key").val(),
+    success: (r) => {
+        const Movies = r.Search;
+        let cards = "";
+        Movies.forEach((m) => {
+        cards += ShowCards(m);
+    });
+    $(".movie-container").html(cards);
+
+    // IMDBID FUNCTION
+    $(".modal-detail-btn").on("click", function () {
+        $.ajax({
+            url: "http://www.omdbapi.com/?apikey=23a4f454&&i=" + $(this).data("imdbid"),
+            success: (s) => {
+            const movieDetail = ShowDetail(s);
+            $(".modal-body").html(movieDetail);
         },
-        error: (e) =>{
+        error: (e) => {
             console.log(e.responseText);
-        }
-    })
-})
+            },
+        });
+        });
+    },
+    error: (e) => {
+    console.log(e.responseText);
+    },
+    });
+});
 
-
-function ShowCards(m){
-    return  `<div class="col-md-3 my-2">
+function ShowCards(m) {
+    return `<div class="col-md-3 my-2">
                 <div class="card">
                     <img src="${m.Poster}" class="card-img-top" alt="">
                     <div class="card-body">
@@ -41,7 +39,7 @@ function ShowCards(m){
                         <a href="#" class="btn btn-primary modal-detail-btn" data-bs-toggle="modal" data-bs-target="#Movie-detail" data-imdbid="${m.imdbID}">More Details</a>
                     </div>
                 </div>
-            </div>`
+            </div>`;
 }
 function ShowDetail(s) {
     return `<div class="container-fluid">
@@ -59,5 +57,5 @@ function ShowDetail(s) {
                         </ul>
                     </div>
                 </div>
-            </div>`
+            </div>`;
 }
