@@ -66,10 +66,39 @@
 
 // REFACTORING CODE //
 const SearchBtn = document.querySelector('.search-btn').addEventListener('click', async function(){
-    const SearchKey = document.querySelector('.input-key').value;
-    const Movie = await GetMovies(SearchKey);
-    UpdateUI(Movie);
+    try{
+        const SearchKey = document.querySelector('.input-key').value;
+        const Movie = await GetMovies(SearchKey);
+        UpdateUI(Movie);
+    }catch(error){
+        // alert(error);
+        alert(error);
+    }
 })
+function GetMovies (key) {
+    return fetch('http://www.omdbapi.com/?apikey=23a4f454&&s=' + key)
+            .then(response =>{
+                if(!response.ok){
+                    throw new Error(response.statusText);
+                    // response.statusText
+                }
+                return response.json();
+            })
+            .then(response => {
+                if(response.Response === "False"){
+                    throw new Error(`${key} Is Not found`);
+                    // response.Error
+                }
+                return response.Search;
+            });
+}
+function UpdateUI (movies) {
+    let cards = '';
+    movies.forEach(m => cards += ShowCards(m));
+    const MovieContainer = document.querySelector('.movie-container');
+    MovieContainer.innerHTML = cards;
+}
+
 document.addEventListener('click', async function(e){
     if( e.target.classList.contains('modal-detail-btn')){
         const imdbid = e.target.dataset.imdbid;
@@ -87,17 +116,7 @@ function GetMovieDetail(id) {
         .then(s => s.json())
         .then(s => s);
 }
-function UpdateUI (movies) {
-    let cards = '';
-    movies.forEach(m => cards += ShowCards(m));
-    const MovieContainer = document.querySelector('.movie-container');
-    MovieContainer.innerHTML = cards;
-}
-function GetMovies (key) {
-    return fetch('http://www.omdbapi.com/?apikey=23a4f454&&s=' + key)
-            .then(response => response.json())
-            .then(response => response.Search);
-}
+
 function ShowCards(m) {
     return `<div class="col-md-3 my-2">
                 <div class="card">
