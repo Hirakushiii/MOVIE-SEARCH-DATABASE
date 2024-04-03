@@ -1,3 +1,5 @@
+// USING AJAX QUERY //
+
 // $(".search-btn").on("click", function () {
 // $.ajax({
 //     url: `http://www.omdbapi.com/?apikey=23a4f454&&s=` + $(".input-key").val(),
@@ -28,37 +30,74 @@
 //     },
 //     });
 // });
-const SearchBtn = document.querySelector('.search-btn').addEventListener('click', function(){
-    const SearchKey = document.querySelector('.input-key').value;
-    fetch('http://www.omdbapi.com/?apikey=23a4f454&&s=' + SearchKey)
-    .then(response => response.json())
-    .then(response =>{
-        const movies = response.Search;
-        let cards = '';
-        movies.forEach(m => cards += ShowCards(m));
-        const MovieContainer = document.querySelector('.movie-container');
-        MovieContainer.innerHTML = cards;
 
-    // DETAIL FUNCTION
-    const DetailBtn = document.querySelectorAll('.modal-detail-btn');
-    DetailBtn.forEach(btn => {
-        btn.addEventListener('click', function(){
-            const imdbid = this.dataset.imdbid;
+// USE FETCH JAVASCRIPT VANILLA //
+
+// const SearchBtn = document.querySelector('.search-btn').addEventListener('click', function(){
+//     const SearchKey = document.querySelector('.input-key').value;
+//     fetch('http://www.omdbapi.com/?apikey=23a4f454&&s=' + SearchKey)
+//     .then(response => response.json())
+//     .then(response =>{
+//         const movies = response.Search;
+//         let cards = '';
+//         movies.forEach(m => cards += ShowCards(m));
+//         const MovieContainer = document.querySelector('.movie-container');
+//         MovieContainer.innerHTML = cards;
+
+//     // DETAIL FUNCTION
+//     const DetailBtn = document.querySelectorAll('.modal-detail-btn');
+//     DetailBtn.forEach(btn => {
+//         btn.addEventListener('click', function(){
+//             const imdbid = this.dataset.imdbid;
             
-            fetch('http://www.omdbapi.com/?apikey=23a4f454&&i=' + imdbid)
-            .then(s => s.json())
-            .then(s =>{
-                    console.log(s);
-                    const MovieDetail = ShowDetail(s);
-                    const ModalBody = document.querySelector('.modal-body');
-                    ModalBody.innerHTML = MovieDetail;
+//             fetch('http://www.omdbapi.com/?apikey=23a4f454&&i=' + imdbid)
+//             .then(s => s.json())
+//             .then(s =>{
+//                     console.log(s);
+//                     const MovieDetail = ShowDetail(s);
+//                     const ModalBody = document.querySelector('.modal-body');
+//                     ModalBody.innerHTML = MovieDetail;
                 
-                })
-            })
-        })
-    })
-})
+//                 })
+//             })
+//         })
+//     })
+// })
 
+// REFACTORING CODE //
+const SearchBtn = document.querySelector('.search-btn').addEventListener('click', async function(){
+    const SearchKey = document.querySelector('.input-key').value;
+    const Movie = await GetMovies(SearchKey);
+    UpdateUI(Movie);
+})
+document.addEventListener('click', async function(e){
+    if( e.target.classList.contains('modal-detail-btn')){
+        const imdbid = e.target.dataset.imdbid;
+        const MovieDetail = await GetMovieDetail(imdbid);
+        UpdateDetail(MovieDetail);
+    }
+})
+function UpdateDetail(s) {
+    const MovieDetail = ShowDetail(s);
+    const ModalBody = document.querySelector('.modal-body');
+    ModalBody.innerHTML = MovieDetail;
+}
+function GetMovieDetail(id) {
+    return fetch('http://www.omdbapi.com/?apikey=23a4f454&&i=' + id)
+        .then(s => s.json())
+        .then(s => s);
+}
+function UpdateUI (movies) {
+    let cards = '';
+    movies.forEach(m => cards += ShowCards(m));
+    const MovieContainer = document.querySelector('.movie-container');
+    MovieContainer.innerHTML = cards;
+}
+function GetMovies (key) {
+    return fetch('http://www.omdbapi.com/?apikey=23a4f454&&s=' + key)
+            .then(response => response.json())
+            .then(response => response.Search);
+}
 function ShowCards(m) {
     return `<div class="col-md-3 my-2">
                 <div class="card">
